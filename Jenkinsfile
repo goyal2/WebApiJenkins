@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         AZURE_CREDENTIALS_ID = 'jenkins-pipeline-sp'
-        RESOURCE_GROUP = 'rg-jenkins'
+        RESOURCE_GROUP = 'somyagoyal_jecrc_rg1'
         APP_SERVICE_NAME = 'webapijenkinssomya'
     }
 
