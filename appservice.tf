@@ -1,20 +1,11 @@
-terraform {
-  required_providers {
-    azurerm = {
-        source = "hashicorp/azurerm"
-        version = ">=3.0.0"
-    }
-  }
-  required_version = ">= 1.0.0"
-}
-
 //Configuration the azure Provider
 provider "azurerm" {
   subscription_id = "0e867537-cf4c-47c3-9de2-b5646da86f8e"
 
-  features {
-    
+  features { 
   }
+  client_id = var.client.id
+  
 }
 
 //Create a resource group with a new name
