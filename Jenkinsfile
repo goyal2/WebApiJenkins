@@ -1,5 +1,7 @@
+// For terraform
 pipeline {
     agent any
+
     environment {
         ARM_CLIENT_ID       = credentials('AZURE_CLIENT_ID')
         ARM_CLIENT_SECRET   = credentials('AZURE_CLIENT_SECRET')
@@ -8,29 +10,32 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/goyal2/WebApiJenkins'
+                git url: 'https://github.com/palakagarwal081/WebApiJenkins.git', branch: 'master'
             }
         }
-        stage('Terraform Init'){
-            steps{
+
+        stage('Terraform Init') {
+            steps {
                 bat 'terraform init'
             }
         }
-        stage('Terraform Plan'){
-            steps{
+
+        stage('Terraform Plan') {
+            steps {
                 bat '''
                     terraform plan ^
                       -var client_id=%ARM_CLIENT_ID% ^
                       -var client_secret=%ARM_CLIENT_SECRET% ^
                       -var tenant_id=%ARM_TENANT_ID% ^
                       -var subscription_id=%ARM_SUBSCRIPTION_ID%
-                    '''  }
+                    '''
+            }
         }
 
-        stage('Terraform Apply'){
-            steps{
+        stage('Terraform Apply') {
+            steps {
                 bat '''
                 terraform apply -auto-approve ^
                   -var client_id=%ARM_CLIENT_ID% ^
@@ -40,23 +45,22 @@ pipeline {
                 '''
             }
         }
-        
-        stage('Build') {
+         stage('Build .NET App') {
             steps {
                 dir('WebApiJenkins') { // Adjust to your .NET project folder
                     bat 'dotnet publish -c Release -o publish'
-
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Azure') {
             steps {
                 bat '''
                 powershell Compress-Archive -Path WebApiJenkins\\publish\\* -DestinationPath publish.zip -Force
                 az webapp deployment source config-zip --resource-group jenkins-palak-rg --name jenkins-palak-app123 --src publish.zip
                 '''
             }
-        }
+        }   
     }
-
+}
 
